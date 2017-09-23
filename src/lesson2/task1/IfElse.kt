@@ -1,7 +1,11 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson2.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
+import java.lang.Math.abs
+import java.lang.Math.sqrt
 
 /**
  * Пример
@@ -33,7 +37,20 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String {
+    val d = age % 10
+    val s = age.toString()
+    val a = age % 100
+    if (a in 11..19) return s + " лет" else
+        return when (d) {
+            1 -> s + " год"
+            2 -> s + " года"
+            3 -> s + " года"
+            4 -> s + " года"
+            else -> s + " лет"
+        }
+}
+
 
 /**
  * Простая
@@ -44,7 +61,11 @@ fun ageDescription(age: Int): String = TODO()
  */
 fun timeForHalfWay(t1: Double, v1: Double,
                    t2: Double, v2: Double,
-                   t3: Double, v3: Double): Double = TODO()
+                   t3: Double, v3: Double): Double {
+    val halfS = (t1 * v1 + t2 * v2 + t3 * v3) / 2
+    if (t1 * v1 >= halfS) return halfS / v1
+    if ((t1 * v1 + t2 * v2) >= halfS) return t1 + (halfS - t1 * v1) / v2 else return t1 + t2 + (halfS - t1 * v1 - t2 * v2) / v3
+}
 
 /**
  * Простая
@@ -57,7 +78,13 @@ fun timeForHalfWay(t1: Double, v1: Double,
  */
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
-                       rookX2: Int, rookY2: Int): Int = TODO()
+                       rookX2: Int, rookY2: Int): Int {
+    if (((kingX == rookX1) || (kingY == rookY1)) && ((kingY == rookY2) || (kingX == rookX2))) return 3
+    if ((kingX == rookX1) || (kingY == rookY1)) return 1
+    if ((kingX == rookX2) || (kingY == rookY2)) return 2
+    return 0
+}
+
 
 /**
  * Простая
@@ -71,7 +98,12 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
  */
 fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           rookX: Int, rookY: Int,
-                          bishopX: Int, bishopY: Int): Int = TODO()
+                          bishopX: Int, bishopY: Int): Int {
+    if (((Math.abs(kingX - bishopX)) == (Math.abs(kingY - bishopY))) && ((kingX == rookX) || (kingY == rookY))) return 3
+    if ((Math.abs(kingX - bishopX)) == (Math.abs(kingY - bishopY))) return 2
+    if ((kingX == rookX) || (kingY == rookY)) return 1
+    return 0
+}
 
 /**
  * Простая
@@ -81,7 +113,29 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+    if ((a == b) && (b == c)) return 0
+    if ((a >= b) && (a >= c)) {
+        if (a >= (b + c)) return -1
+        if (a == sqrt((sqr(b) + sqr(c)))) return 1
+        if (a > sqrt((sqr(b) + sqr(c)))) return 2
+        if (a < sqrt((sqr(b) + sqr(c)))) return 0
+    }
+    if ((b >= a) && (b >= c)) {
+        if (b >= (a + c)) return -1
+        if (b == sqrt((sqr(a) + sqr(c)))) return 1
+        if (b > sqrt((sqr(a) + sqr(c)))) return 2
+        if (b < sqrt((sqr(a) + sqr(c)))) return 0
+    }
+    if ((c >= b) && (c >= a)) {
+        if (c >= (a + c)) return -1
+        if (c == sqrt((sqr(a) + sqr(b)))) return 1
+        if (c > sqrt((sqr(a) + sqr(b)))) return 2
+        if (c < sqrt((sqr(a) + sqr(b)))) return 0
+    }
+    return -1
+
+}
 
 /**
  * Средняя
@@ -91,4 +145,24 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    val lengthAB = abs(b - a)
+    val lengthCD = abs(d - c)
+    if ((lengthAB == 0) || (lengthCD == 0)) {
+        if ((lengthAB == 0) && (lengthCD == 0) && (a == c)) return 0
+        if ((lengthAB == 0) && (a >= c) && (a <= d)) return 0
+        if ((lengthCD == 0) && (c >= a) && (c <= b)) return 0
+    } else {
+        if ((a == c) && (b == d)) return lengthAB
+        if ((b == c) || (d == b)) return 0
+        if (b > d) {
+            if (d > a) {
+                if (a > c) return abs(d - a) else return lengthCD
+            }
+        } else {
+            if (c < a) return lengthAB
+            if ((c > a) && (c < b)) return abs(b - c)
+        }
+    }
+    return -1
+}
