@@ -128,7 +128,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
         if (b < sqrt((sqr(a) + sqr(c)))) return 0
     }
     if ((c >= b) && (c >= a)) {
-        if (c >= (a + c)) return -1
+        if (c >= (a + b)) return -1
         if (c == sqrt((sqr(a) + sqr(b)))) return 1
         if (c > sqrt((sqr(a) + sqr(b)))) return 2
         if (c < sqrt((sqr(a) + sqr(b)))) return 0
@@ -154,10 +154,15 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
         if ((lengthCD == 0) && (c >= a) && (c <= b)) return 0
     } else {
         if ((a == c) && (b == d)) return lengthAB
-        if ((b == c) || (d == b)) return 0
+        if ((b == c) || (d == b)) {
+            return if (b == d) {
+                 if (a>c) lengthAB else lengthCD
+            }
+            else  0
+        }
         if (b > d) {
             if (d > a) {
-                if (a > c) return abs(d - a) else return lengthCD
+                return if (a > c) abs(d - a) else  lengthCD
             }
         } else {
             if (c < a) return lengthAB
@@ -166,3 +171,4 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
     }
     return -1
 }
+
