@@ -180,8 +180,10 @@ fun sin(x: Double, eps: Double): Double {
     var c = x
     var k = 1
     var p = 1
+    var v = x
+    while ((v < 0) || (v > 2 * PI)) if (v < 0) v += 2 * PI else v -= 2 * PI
     while (abs(c) > eps) {
-        c = pow(x, p * 1.0) / factorial(p)
+        c = pow(v, p * 1.0) / factorial(p)
         if (k % 2 == 1) s += c else s -= c
         p += 2
         k++
@@ -201,8 +203,10 @@ fun cos(x: Double, eps: Double): Double {
     var c = 1.0
     var k = 1
     var p = 2
+    var v = x
+    while ((v < 0) || (v > 2 * PI)) if (v < 0) v += 2 * PI else v -= 2 * PI
     while (abs(c) > eps) {
-        c = pow(x, p * 1.0) / factorial(p)
+        c = pow(v, p * 1.0) / factorial(p)
         if (k % 2 == 0) s += c else s -= c
         p += 2
         k++
