@@ -159,11 +159,10 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
+
 fun squareBetweenExists(m: Int, n: Int): Boolean {
     for (i in m..n) {
-        for (k in 1..i) {
-            if (sqr(k * 1.0) == (i * 1.0)) return true
-        }
+        if (sqrt(i.toDouble()) % 1 == 0.0) return true
     }
     return false
 }
@@ -175,6 +174,12 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
  * sin(x) = x - x^3 / 3! + x^5 / 5! - x^7 / 7! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
+fun powInt(a: Double, b: Int): Double {
+    var s = 1.0
+    for (i in 1..b) s *= a
+    return s
+}
+
 fun sin(x: Double, eps: Double): Double {
     var s = 0.0
     var c = x
@@ -183,7 +188,7 @@ fun sin(x: Double, eps: Double): Double {
     var v = x
     while ((v < 0) || (v > 2 * PI)) if (v < 0) v += 2 * PI else v -= 2 * PI
     while (abs(c) > eps) {
-        c = pow(v, p * 1.0) / factorial(p)
+        c = powInt(v, p) / factorial(p)
         if (k % 2 == 1) s += c else s -= c
         p += 2
         k++
@@ -198,6 +203,8 @@ fun sin(x: Double, eps: Double): Double {
  * cos(x) = 1 - x^2 / 2! + x^4 / 4! - x^6 / 6! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
+
+
 fun cos(x: Double, eps: Double): Double {
     var s = 1.0
     var c = 1.0
@@ -206,7 +213,7 @@ fun cos(x: Double, eps: Double): Double {
     var v = x
     while ((v < 0) || (v > 2 * PI)) if (v < 0) v += 2 * PI else v -= 2 * PI
     while (abs(c) > eps) {
-        c = pow(v, p * 1.0) / factorial(p)
+        c = powInt(v, p) / factorial(p)
         if (k % 2 == 0) s += c else s -= c
         p += 2
         k++
@@ -226,7 +233,7 @@ fun revert(n: Int): Int {
     var revertN = 0.0
     var number = n
     for (i in (count) downTo 1) {
-        revertN += number % 10 * pow(10.0, (i * 1.0 - 1))
+        revertN += number % 10 * powInt(10.0, (i - 1))
         number /= 10
     }
     return revertN.toInt()
