@@ -117,21 +117,24 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     if ((a == b) && (b == c)) return 0
     if ((a >= b) && (a >= c)) {
         if (a >= (b + c)) return -1
-        if (a == sqrt((sqr(b) + sqr(c)))) return 1
-        if (a > sqrt((sqr(b) + sqr(c)))) return 2
-        if (a < sqrt((sqr(b) + sqr(c)))) return 0
+        val k = sqrt((sqr(b) + sqr(c)))
+        if (a == k) return 1
+        if (a > k) return 2
+        if (a < k) return 0
     }
     if ((b >= a) && (b >= c)) {
         if (b >= (a + c)) return -1
-        if (b == sqrt((sqr(a) + sqr(c)))) return 1
-        if (b > sqrt((sqr(a) + sqr(c)))) return 2
-        if (b < sqrt((sqr(a) + sqr(c)))) return 0
+        val k = sqrt((sqr(a) + sqr(c)))
+        if (b == k) return 1
+        if (b > k) return 2
+        if (b < k) return 0
     }
     if ((c >= b) && (c >= a)) {
         if (c >= (a + b)) return -1
-        if (c == sqrt((sqr(a) + sqr(b)))) return 1
-        if (c > sqrt((sqr(a) + sqr(b)))) return 2
-        if (c < sqrt((sqr(a) + sqr(b)))) return 0
+        val k = sqrt((sqr(a) + sqr(b)))
+        if (c == k) return 1
+        if (c > k) return 2
+        if (c < k) return 0
     }
     return -1
 
