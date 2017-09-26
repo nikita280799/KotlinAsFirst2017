@@ -247,15 +247,13 @@ fun revert(n: Int): Int {
  * 15751 -- палиндром, 3653 -- нет.
  */
 fun isPalindrome(n: Int): Boolean {
-    if (digitNumber(n)!=10) {
-    if (n == revert(n)) return true else return false }
-    else {
-        if ((n%10)==(n/1000000000)){
-            val n1=n%1000000000/10
-            if (n1== revert(n1)) return true
-        }
-        return false
+    var count = digitNumber(n) - 1
+    val s = n.toString()
+    for (i in 0..count) {
+        if (s[i] != s[count]) return false
+        count -= 1
     }
+    return true
 }
 
 /**
