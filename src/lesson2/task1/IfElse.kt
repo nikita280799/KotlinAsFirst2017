@@ -4,8 +4,7 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import java.lang.Math.abs
-import java.lang.Math.sqrt
+import java.lang.Math.*
 
 /**
  * Пример
@@ -41,7 +40,7 @@ fun ageDescription(age: Int): String {
     val d = age % 10
     val s = age.toString()
     val a = age % 100
-    if (a in 11..19) return s + " лет" else
+    return if (a in 11..19)  s + " лет" else
         return when (d) {
             1 -> s + " год"
             2 -> s + " года"
@@ -115,30 +114,14 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    if ((a == b) && (b == c)) return 0
-    if ((a >= b) && (a >= c)) {
-        if (a >= (b + c)) return -1
-        val k = sqrt((sqr(b) + sqr(c)))
-        if (a == k) return 1
-        if (a > k) return 2
-        if (a < k) return 0
-    }
-    if ((b >= a) && (b >= c)) {
-        if (b >= (a + c)) return -1
-        val k = sqrt((sqr(a) + sqr(c)))
-        if (b == k) return 1
-        if (b > k) return 2
-        if (b < k) return 0
-    }
-    if ((c >= b) && (c >= a)) {
-        if (c >= (a + b)) return -1
-        val k = sqrt((sqr(a) + sqr(b)))
-        if (c == k) return 1
-        if (c > k) return 2
-        if (c < k) return 0
-    }
-    return -1
-
+    val max=max(max(a,b),c)
+    val min=min(min(a,b),c)
+    val mid=a+b+c-(max+min)
+    if (max >= (min + mid)) return -1
+    val k = sqrt((sqr(mid) + sqr(min)))
+    if (max > k) return 2
+    if (max < k) return 0
+    return 1
 }
 
 /**

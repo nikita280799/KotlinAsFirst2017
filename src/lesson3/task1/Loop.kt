@@ -80,12 +80,12 @@ fun digitNumber(n: Int): Int {
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int =
-        when (n) {
-            1 -> 1
-            2 -> 1
-            else -> fib(n - 2) + fib(n - 1)
-        }
+    fun fib(n: Int): Int =
+            when (n) {
+                1 -> 1
+                2 -> 1
+                else -> fib(n - 2) + fib(n - 1)
+            }
 
 /**
  * Простая
@@ -94,13 +94,13 @@ fun fib(n: Int): Int =
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    var c = 0
-    for (i in 1..m * n) {
-        if (((i % m) == 0) && ((i % n) == 0)) {
-            c = i
-            break
-        }
-    }
+    var c=m*n
+    var a=m
+    var b=n
+    do {
+        if (a>b)  a-=b else b-=a;
+    } while (m==n)
+    c/=a
     return c
 }
 
@@ -306,9 +306,17 @@ fun fibSequenceDigit(n: Int): Int {
     var k = 0
     var i = 0
     var s = 0
+    var n1=1
+    var n2=2
+    var c=0
     while (n > k) {
         i++
-        s = fib(i)
+        if (i<=3) s = fib(i) else {
+            s=n1+n2
+            c=n2
+            n2+=n1
+            n1=c
+        }
         k += digitNumber(s)
     }
     if (n == k) return s % 10
