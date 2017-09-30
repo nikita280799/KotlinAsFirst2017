@@ -161,8 +161,8 @@ fun sqrInt(a: Int): Int = a * a
 
 fun squareBetweenExists(m: Int, n: Int): Boolean {
     for (i in m..n) {
-        val a = sqrt(i.toDouble()).toInt()
-        if (sqrInt(a) == i) return true
+        val c = sqrt(i.toDouble()).toInt()
+        if (sqrInt(c) == i) return true
     }
     return false
 }
