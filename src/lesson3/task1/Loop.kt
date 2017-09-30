@@ -80,12 +80,12 @@ fun digitNumber(n: Int): Int {
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-    fun fib(n: Int): Int =
-            when (n) {
-                1 -> 1
-                2 -> 1
-                else -> fib(n - 2) + fib(n - 1)
-            }
+fun fib(n: Int): Int =
+        when (n) {
+            1 -> 1
+            2 -> 1
+            else -> fib(n - 2) + fib(n - 1)
+        }
 
 /**
  * Простая
@@ -94,14 +94,13 @@ fun digitNumber(n: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    var c=m*n
-    var a=m
-    var b=n
-    do {
-        if (a>b)  a-=b else b-=a;
-    } while (m==n)
-    c/=a
-    return c
+    var a = m
+    var b = n
+    val c = a * b
+    while ((a != 0) && (b != 0)) {
+        if (a > b) a %= b else b %= a
+    }
+    return c / (a + b)
 }
 
 /**
@@ -144,8 +143,7 @@ fun maxDivisor(n: Int): Int {
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
-    val max: Int
-    if (m >= n) max = m else max = n
+    val max = max(m, n)
     for (i in 2..max) {
         if (((m % i) == 0) && ((n % i) == 0)) return false
     }
@@ -159,10 +157,12 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
+fun sqrInt(a: Int): Int = a * a
 
 fun squareBetweenExists(m: Int, n: Int): Boolean {
     for (i in m..n) {
-        if (sqrt(i.toDouble()) % 1 == 0.0) return true
+        val a = sqrt(i.toDouble()).toInt()
+        if (sqrInt(a) == i) return true
     }
     return false
 }
@@ -176,7 +176,9 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
  */
 fun powInt(a: Double, b: Int): Double {
     var s = 1.0
-    for (i in 1..b) s *= a
+    for (i in 1..b) {
+        s *= a
+    }
     return s
 }
 
@@ -186,7 +188,7 @@ fun sin(x: Double, eps: Double): Double {
     var k = 1
     var p = 1
     var v = x
-    while ((v < 0) || (v > 2 * PI)) if (v < 0) v += 2 * PI else v -= 2 * PI
+    v = v / PI % 2 * PI
     while (abs(c) > eps) {
         c = powInt(v, p) / factorial(p)
         if (k % 2 == 1) s += c else s -= c
@@ -211,7 +213,7 @@ fun cos(x: Double, eps: Double): Double {
     var k = 1
     var p = 2
     var v = x
-    while ((v < 0) || (v > 2 * PI)) if (v < 0) v += 2 * PI else v -= 2 * PI
+    v = v / PI % 2 * PI
     while (abs(c) > eps) {
         c = powInt(v, p) / factorial(p)
         if (k % 2 == 0) s += c else s -= c
@@ -232,7 +234,7 @@ fun revert(n: Int): Int {
     val count = digitNumber(n)
     var revertN = 0.0
     var number = n
-    for (i in (count) downTo 1) {
+    for (i in count downTo 1) {
         revertN += number % 10 * powInt(10.0, (i - 1))
         number /= 10
     }
@@ -306,16 +308,15 @@ fun fibSequenceDigit(n: Int): Int {
     var k = 0
     var i = 0
     var s = 0
-    var n1=1
-    var n2=2
-    var c=0
+    var n1 = 1
+    var n2 = 1
     while (n > k) {
         i++
-        if (i<=3) s = fib(i) else {
-            s=n1+n2
-            c=n2
-            n2+=n1
-            n1=c
+        if (i < 3) s = fib(i) else {
+            s = n1 + n2
+            val c = n2
+            n2 += n1
+            n1 = c
         }
         k += digitNumber(s)
     }
