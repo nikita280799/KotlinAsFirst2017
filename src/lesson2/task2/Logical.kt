@@ -44,14 +44,13 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
  * Вернуть true, если утверждение верно
  */
 fun circleInside(x1: Double, y1: Double, r1: Double,
-                 x2: Double, y2: Double, r2: Double): Boolean {
-    if (pointInsideCircle(x1, y1, x2, y2, r2)
-            && pointInsideCircle(x1 + r1, y1, x2, y2, r2)
-            && pointInsideCircle(x1, y1 + r1, x2, y2, r2)
-            && pointInsideCircle(x1 - r1, y1, x2, y2, r2)
-            && pointInsideCircle(x1, y1 - r1, x2, y2, r2)) return true
-    return false
-}
+                 x2: Double, y2: Double, r2: Double): Boolean =
+        (pointInsideCircle(x1, y1, x2, y2, r2)
+                && pointInsideCircle(x1 + r1, y1, x2, y2, r2)
+                && pointInsideCircle(x1, y1 + r1, x2, y2, r2)
+                && pointInsideCircle(x1 - r1, y1, x2, y2, r2)
+                && pointInsideCircle(x1, y1 - r1, x2, y2, r2))
+
 
 /**
  * Средняя
@@ -65,6 +64,6 @@ fun circleInside(x1: Double, y1: Double, r1: Double,
 fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
     val min = min(min(a, b), c)
     val mid = a + b + c - (min + max(max(a, b), c))
-    if ((min * mid) <= (s * r)) return true
+    if ((mid <= max(s, r)) && (min <= min(s, r))) return true
     return false
 }
