@@ -337,9 +337,9 @@ fun romanPart(n: Int, c: Int, s: String): String {
 fun roman(n: Int): String {
     val sb = StringBuilder()
     var n1 = n
-    val listOfLetters = listOf<String>("M", "CM", "D", "CD",
+    val listOfLetters = listOf("M", "CM", "D", "CD",
             "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
-    val listOfNumerals = listOf<Int>(1000, 900, 500, 400,
+    val listOfNumerals = listOf(1000, 900, 500, 400,
             100, 90, 50, 40, 10, 9, 5, 4, 1)
     for (i in 0..12) {
         if (n1 >= listOfNumerals[i]) {
@@ -359,14 +359,14 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 
-fun russian(n: Int): String {
+fun russianPart(n: Int, m: Boolean): List<String> {
     val listHundred = listOf("сто", "двести", "триста",
             "четыреста", "пятьсот", "шестьсот",
             "семьсот", "восемьсот", "девятьсот")
     val listDecades = listOf("двадцать",
             "тридцать", "сорок", "пятьдесят", "шестьдесят",
             "семьдесят", "восемьдесят", "девяносто")
-    val listUnit = listOf("один", "два", "три",
+    val listUnit = listOf("","один", "два", "три",
             "четыре", "пять", "шесть",
             "семь", "восемь", "девять")
     val listUniqueNumbers = listOf("десять", "одиннадцать",
@@ -378,8 +378,7 @@ fun russian(n: Int): String {
             "четыре тысячи", "пять тысяч", "шесть тысяч",
             "семь тысяч", "восемь тысяч", "девять тысяч")
     val list = mutableListOf<String>()
-    var a = n / 1000
-    var b = n % 1000
+    var a = n
     if (a > 0) {
         if (a >= 100) {
             list += listHundred[a / 100 - 1]
@@ -394,26 +393,12 @@ fun russian(n: Int): String {
             }
             a %= 10
         }
-        list += listUnitOfThousends[a]
+        list += if (m) listUnitOfThousends[a] else listUnit[a]
     }
+    return list
+}
 
-    if (b > 0) {
-        if (b >= 100) {
-            list += listHundred[b / 100 - 1]
-            b %= 100
-        }
-        if (b >= 10) {
-            if (b in 10..19) {
-                list += listUniqueNumbers[b % 10]
-                b -= b % 10
-            } else {
-                list += listDecades[b / 10 - 2]
-            }
-            b %= 10
-        }
-        if (b > 0) {
-            list += listUnit[b - 1]
-        }
-    }
-    return list.joinToString(separator = " ")
+fun russian(n: Int): String {
+    val list = russianPart(n / 1000, true) + russianPart(n % 1000, false)
+    return list.joinToString(separator = " ").trim()
 }
