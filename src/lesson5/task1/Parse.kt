@@ -141,6 +141,7 @@ fun flattenPhoneNumber(phone: String): String {
             }
         }
     }
+    if ((list.size == 1) && (list[0] == '+')) return ""
     return list.joinToString(separator = "")
 }
 
@@ -308,7 +309,6 @@ fun firstDuplicateIndex(str: String): Int {
 fun mostExpensive(description: String): String {
     var listOfPrices = listOf<Double>()
     var listOfProducts = listOf<String>()
-    var s = ""
     val parts = description.split(";")
     for (part in parts) {
         val partOfParts = part.split(" ")
@@ -458,11 +458,13 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     }
     var sensor = cells / 2
     var count = 0
-    val s = commands
     var i = 0
     var command = ' '
-    while ((count < limit) && (i < s.length)) {
-        command = s[i]
+    while ((count < limit) && (i < commands.length)) {
+        command = commands[i]
+        if (sensor !in 0 until cells) {
+            throw IllegalStateException()
+        }
         if (command == ' ') {
             i++
         }
