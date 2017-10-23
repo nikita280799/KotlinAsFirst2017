@@ -434,6 +434,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             list2.add(i)
         }
     }
+
     if (count1 != count2) {
         throw IllegalArgumentException()
     }
@@ -441,34 +442,34 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var listSecond = listOf<Int>()
     var j = 0
     while (list1.isNotEmpty()) {
-            if (list1[j] + list1[j+1] == "[]") {
-                listFirst += list2[j]
-                listSecond += list2[j+1]
-                list1.removeAt(j)
-                list1.removeAt(j)
-                list2.removeAt(j)
-                list2.removeAt(j)
-                if (j>0) {
-                    j--
-                }
-            } else {
-                j++
+        if (list1[j] + list1[j + 1] == "[]") {
+            listFirst += list2[j]
+            listSecond += list2[j + 1]
+            list1.removeAt(j)
+            list1.removeAt(j)
+            list2.removeAt(j)
+            list2.removeAt(j)
+            if (j > 0) {
+                j--
             }
+        } else {
+            j++
+        }
     }
     var sensor = cells / 2
     var count = 0
     val s = commands
     var i = 0
     var command = ' '
-    while ((count < limit) && (i < s.length))  {
+    while ((count < limit) && (i < s.length)) {
         command = s[i]
         if (command == ' ') {
             i++
         }
         if (command == '>') {
-                sensor++
-                i++
-            }
+            sensor++
+            i++
+        }
         if (command == '<') {
             sensor--
             i++
