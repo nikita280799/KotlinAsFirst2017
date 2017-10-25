@@ -280,15 +280,6 @@ fun convertToString(n: Int, base: Int): String {
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun powInt(a: Int, b: Int): Int {
-    var s = 1
-    for (i in 1..b) {
-        s *= a
-    }
-    return s
-}
-
-
 fun decimal(digits: List<Int>, base: Int): Int {
     var s = 0
     for (i in digits.size - 1 downTo 0) {
@@ -297,6 +288,13 @@ fun decimal(digits: List<Int>, base: Int): Int {
     return s
 }
 
+fun powInt(a: Int, b: Int): Int {
+    var s = 1
+    for (i in 1..b) {
+        s *= a
+    }
+    return s
+}
 /**
  * Сложная
  *
@@ -323,17 +321,6 @@ fun decimalFromString(str: String, base: Int): Int {
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun romanPart(n: Int, c: Int, s: String): String {
-    val sb = StringBuilder()
-    var n1 = n
-    while (n1 >= c) {
-        n1 -= c
-        sb.append(s)
-    }
-    return sb.toString()
-}
-
-
 fun roman(n: Int): String {
     val sb = StringBuilder()
     var n1 = n
@@ -350,6 +337,15 @@ fun roman(n: Int): String {
     return sb.toString()
 }
 
+fun romanPart(n: Int, c: Int, s: String): String {
+    val sb = StringBuilder()
+    var n1 = n
+    while (n1 >= c) {
+        n1 -= c
+        sb.append(s)
+    }
+    return sb.toString()
+}
 
 /**
  * Очень сложная
@@ -358,6 +354,11 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
+
+fun russian(n: Int): String {
+    val list = russianPart(n / 1000, true) + russianPart(n % 1000, false)
+    return list.joinToString(separator = " ").trim()
+}
 
 fun russianPart(n: Int, m: Boolean): List<String> {
     val listHundred = listOf("сто", "двести", "триста",
@@ -396,9 +397,4 @@ fun russianPart(n: Int, m: Boolean): List<String> {
         list += if (m) listUnitOfThousends[a] else listUnit[a]
     }
     return list
-}
-
-fun russian(n: Int): String {
-    val list = russianPart(n / 1000, true) + russianPart(n % 1000, false)
-    return list.joinToString(separator = " ").trim()
 }
