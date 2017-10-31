@@ -95,9 +95,9 @@ fun dateDigitToStr(digital: String): String {
     val parts = digital.split(".")
     val listOfMonth = listOf("января", "февраля", "марта", "апреля", "мая",
             "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
-    var day = 0
-    var year = 0
-    var month = 0
+    val day: Int
+    val year: Int
+    val month: Int
     if (parts.size != 3) return ""
     try {
         day = parts[0].toInt()
@@ -126,20 +126,13 @@ fun dateDigitToStr(digital: String): String {
  * При неверном формате вернуть пустую строку
  */
 fun flattenPhoneNumber(phone: String): String {
-    var list = listOf<Char>()
-    for (j in 0 until phone.length) {
-        if ((phone[j] != ' ') && (phone[j] != '-') && (phone[j] != '(') && (phone[j] != ')')) {
-            list += phone[j]
-        }
-    }
-    for (i in 0 until list.size) {
-        if ((i != 0) || ((i == 0) && (list[0] != '+'))) {
-            try {
-                list[i].toString().toInt()
-            } catch (e: NumberFormatException) {
-                return ""
-            }
-        }
+    val list = phone.filter {
+        (it.toInt() in 48..57) || ((it != ' ')
+                && (it != '(') && (it != ')') && (it != '-'))
+    }.toList()
+    if ((list[0] != '+') && (list[0].toInt() !in 48..57)) return ""
+    for (i in 1 until list.size) {
+        if (list[i].toInt() !in 48..57) return ""
     }
     if ((list.size == 1) && (list[0] == '+')) return ""
     return list.joinToString(separator = "")
@@ -157,28 +150,18 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    val s = StringBuilder()
-    val list = mutableListOf<Int>()
-    var b = -1
-    for (char in jumps) {
-        if ((char != '%') && (char != '-')) {
-            s.append(char)
+    val parts = jumps.split(" ")
+    val list1 = parts.filter { (it != "-") && (it != "%") && (it != "") }.toList()
+    val list2 = mutableListOf<Int>()
+    for (element in list1) {
+        try {
+            list2.add(element.toInt())
+        } catch (e: NumberFormatException) {
+            return -1
         }
     }
-    val parts = s.split(" ")
-    try {
-        for (part in parts) {
-            if (part != "") list.add(part.toInt())
-        }
-    } catch (e: NumberFormatException) {
-        return -1
-    }
-    for (element in list) {
-        if (element >= b) {
-            b = element
-        }
-    }
-    return b
+    val max = list2.max()
+    return max ?: -1
 }
 
 
@@ -234,7 +217,7 @@ fun plusMinus(expression: String): Int {
     var listOfSigns = listOf<String>()
     val parts = expression.split(" ")
     var i = 1
-    var result = 0
+    var result: Int
     for (part in parts) {
         if (i % 2 == 1) {
             listOfNumbers += part
@@ -273,25 +256,25 @@ fun plusMinus(expression: String): Int {
 fun firstDuplicateIndex(str: String): Int {
     val parts = str.toLowerCase().split(" ")
     var list = listOf<String>()
-    var s = ""
+    var s1: String
+    var s2 = ""
     var a = 0
-    var k = 0
+    var k = -1
     for (part in parts) {
         list += part
     }
-    if (list.size > 1) {
-        for (i in 0 until list.size - 1) {
-            s = list[i]
-            if (s == list[i + 1]) {
-                a = i
-                break
-            }
+    for (i in 0 until list.size) {
+        s1 = list[i]
+        if (s1 == s2) {
+            a = i
+            k -= list[i].length
+            break
         }
+        k += list[i].length
+        s2 = list[i]
     }
-    if ((list.size < 2) || ((list.size > 2) && (a == 0))) return -1
-    for (j in 0 until a) {
-        k += list[j].length
-    }
+
+    if (a == 0) return -1
     return k + a
 }
 
@@ -309,20 +292,12 @@ fun firstDuplicateIndex(str: String): Int {
 fun mostExpensive(description: String): String {
     var listOfPrices = listOf<Double>()
     var listOfProducts = listOf<String>()
-    val parts = description.split(";")
+    val parts = description.split("; ")
     for (part in parts) {
         val partOfParts = part.split(" ")
-        var i = 1
-        for (part2 in partOfParts) {
-            if (part2 != "") {
-                if (i % 2 == 1) {
-                    listOfProducts += part2
-                } else {
-                    listOfPrices += part2.toDouble()
-                }
-                i++
-            }
-        }
+        if (partOfParts.size != 2) return ""
+        listOfProducts += partOfParts[0]
+        listOfPrices += partOfParts[1].toDouble()
     }
     val ind = listOfPrices.indexOf(listOfPrices.max())
     return if (ind == -1) "" else listOfProducts[ind]
@@ -340,31 +315,30 @@ fun mostExpensive(description: String): String {
  * Вернуть -1, если roman не является корректным римским числом
  */
 fun fromRoman(roman: String): Int {
-    val listOfLetters = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
-    val listOfNumbers = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
+    val map = mapOf("M" to 1000, "CM" to 900, "D" to 500, "CD" to 400, "C" to 100, "XC" to 90,
+            "L" to 50, "XL" to 40, "X" to 10, "IX" to 9, "V" to 5, "IV" to 4, "I" to 1)
     var s = roman
+    var s1: String
+    var s2: String
+    var n1: Int
+    var n2: Int
     var result = -1
     if (s != "") {
         result++
     }
     while (s != "") {
-        try {
-            if (s.length > 1) {
-                var s1 = s.substring(0, 2)
-                if (s1 in listOfLetters) {
-                    result += listOfNumbers[listOfLetters.indexOf(s1)]
-                    s = s.substring(2)
-                } else {
-                    s1 = s.substring(0, 1)
-                    result += listOfNumbers[listOfLetters.indexOf(s1)]
-                    s = s.substring(1)
-                }
+        s1 = s.substring(0, 1)
+        s2 = if (s.length > 1) s.substring(0, 2) else ""
+        n1 = map[s1] ?: 0
+        n2 = map[s2] ?: 0
+        if (n1 == n2) return -1 else {
+            if (n2 != 0) {
+                result += n2
+                s = s.substring(2)
             } else {
-                result += listOfNumbers[listOfLetters.indexOf(s)]
-                break
+                result += n1
+                s = s.substring(1)
             }
-        } catch (e: ArrayIndexOutOfBoundsException) {
-            return -1
         }
     }
     return result
@@ -409,62 +383,43 @@ fun fromRoman(roman: String): Int {
 
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val list = mutableListOf<Int>()
-    val list1 = mutableListOf<String>()
-    val list2 = mutableListOf<Int>()
-    var count1 = 0
-    var count2 = 0
+    var listFirst = listOf<Int>()
+    var listSecond = listOf<Int>()
     for (i in 0 until cells) {
         list.add(0)
     }
+    var k = 0
+    var j: Int
     for (i in 0 until commands.length) {
+        if (commands[i] == '[') {
+            k++
+            listFirst += i
+            j = i + 1
+            while (k != 0) {
+                if (j == commands.length) throw IllegalArgumentException()
+                if (commands[j] == ']') {
+                    k--
+                }
+                if (commands[j] == '[') {
+                    k++
+                }
+                j++
+            }
+            listSecond += j - 1
+        }
         if ((commands[i] != '<') && (commands[i] != '>') &&
                 (commands[i] != '+') && (commands[i] != '-') &&
                 (commands[i] != '[') && (commands[i] != ']') &&
                 (commands[i] != ' ')) {
             throw IllegalArgumentException()
         }
-        if (commands[i] == '[') {
-            count1++
-            list1.add(commands[i].toString())
-            list2.add(i)
-        }
-        if (commands[i] == ']') {
-            count2++
-            list1.add(commands[i].toString())
-            list2.add(i)
-        }
-    }
-
-    if (count1 != count2) {
-        throw IllegalArgumentException()
-    }
-    var listFirst = listOf<Int>()
-    var listSecond = listOf<Int>()
-    var j = 0
-    while (list1.isNotEmpty()) {
-        if (list1[j] + list1[j + 1] == "[]") {
-            listFirst += list2[j]
-            listSecond += list2[j + 1]
-            list1.removeAt(j)
-            list1.removeAt(j)
-            list2.removeAt(j)
-            list2.removeAt(j)
-            if (j > 0) {
-                j--
-            }
-        } else {
-            j++
-        }
     }
     var sensor = cells / 2
     var count = 0
     var i = 0
-    var command = ' '
+    var command: Char
     while ((count < limit) && (i < commands.length)) {
         command = commands[i]
-        if (sensor !in 0 until cells) {
-            throw IllegalStateException()
-        }
         if (command == ' ') {
             i++
         }
@@ -499,6 +454,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             }
         }
         count++
+        if (sensor !in 0 until cells) {
+            throw IllegalStateException()
+        }
     }
     return list
 }
