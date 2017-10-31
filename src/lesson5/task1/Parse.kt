@@ -127,13 +127,13 @@ fun dateDigitToStr(digital: String): String {
  */
 fun flattenPhoneNumber(phone: String): String {
     val list = phone.filter {
-        (it.toInt() in 48..57) || ((it != ' ')
+        (it in '0'..'9') || ((it != ' ')
                 && (it != '(') && (it != ')') && (it != '-'))
     }.toList()
     if (list.isEmpty()) return ""
     if ((list[0] != '+') && (list[0].toInt() !in 48..57)) return ""
     for (i in 1 until list.size) {
-        if (list[i].toInt() !in 48..57) return ""
+        if (list[i] !in '0'..'9') return ""
     }
     if ((list.size == 1) && (list[0] == '+')) return ""
     return list.joinToString(separator = "")
@@ -259,7 +259,7 @@ fun firstDuplicateIndex(str: String): Int {
     var list = listOf<String>()
     var s1: String
     var s2 = ""
-    var a = 0
+    val a: Int
     var k = -1
     for (part in parts) {
         list += part
@@ -269,14 +269,12 @@ fun firstDuplicateIndex(str: String): Int {
         if (s1 == s2) {
             a = i
             k -= list[i].length
-            break
+            return k + a
         }
         k += list[i].length
         s2 = list[i]
     }
-
-    if (a == 0) return -1
-    return k + a
+    return -1
 }
 
 /**
@@ -291,17 +289,16 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть положительными
  */
 fun mostExpensive(description: String): String {
-    var listOfPrices = listOf<Double>()
-    var listOfProducts = listOf<String>()
     val parts = description.split("; ")
-    for (part in parts) {
-        val partOfParts = part.split(" ")
+    var max = Pair("",0.0)
+    for (i in 0 until parts.size) {
+        val partOfParts = parts[i].split(" ")
         if (partOfParts.size != 2) return ""
-        listOfProducts += partOfParts[0]
-        listOfPrices += partOfParts[1].toDouble()
+        if (partOfParts[1].toDouble() >= max.component2()) {
+            max = Pair(partOfParts[0],partOfParts[1].toDouble())
+        }
     }
-    val ind = listOfPrices.indexOf(listOfPrices.max())
-    return if (ind == -1) "" else listOfProducts[ind]
+    return max.component1()
 }
 
 /**
