@@ -130,6 +130,7 @@ fun flattenPhoneNumber(phone: String): String {
         (it.toInt() in 48..57) || ((it != ' ')
                 && (it != '(') && (it != ')') && (it != '-'))
     }.toList()
+    if (list.isEmpty()) return ""
     if ((list[0] != '+') && (list[0].toInt() !in 48..57)) return ""
     for (i in 1 until list.size) {
         if (list[i].toInt() !in 48..57) return ""
