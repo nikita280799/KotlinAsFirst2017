@@ -290,12 +290,12 @@ fun firstDuplicateIndex(str: String): Int {
  */
 fun mostExpensive(description: String): String {
     val parts = description.split("; ")
-    var max = Pair("",0.0)
+    var max = Pair("", 0.0)
     for (i in 0 until parts.size) {
         val partOfParts = parts[i].split(" ")
         if (partOfParts.size != 2) return ""
         if (partOfParts[1].toDouble() >= max.component2()) {
-            max = Pair(partOfParts[0],partOfParts[1].toDouble())
+            max = Pair(partOfParts[0], partOfParts[1].toDouble())
         }
     }
     return max.component1()
@@ -412,6 +412,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             throw IllegalArgumentException()
         }
     }
+    if (listFirst.isEmpty() && "]" in commands) throw IllegalArgumentException()
     var sensor = cells / 2
     var count = 0
     var i = 0
