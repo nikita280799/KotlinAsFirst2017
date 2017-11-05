@@ -318,8 +318,6 @@ fun fromRoman(roman: String): Int {
     var s = roman
     var s1: String
     var s2: String
-    var n1: Int
-    var n2: Int
     var result = -1
     if (s != "") {
         result++
@@ -327,13 +325,14 @@ fun fromRoman(roman: String): Int {
     while (s != "") {
         s1 = s.substring(0, 1)
         s2 = if (s.length > 1) s.substring(0, 2) else ""
-        n1 = map[s1] ?: 0
-        n2 = map[s2] ?: 0
-        if (n1 == n2) return -1 else {
-            if (n2 != 0) {
-                result += n2
-                s = s.substring(2)
-            } else {
+        val n1 = map[s1]
+        val n2 = map[s2]
+        if ((n1 == null) && (n2 == null)) return -1
+        if (n2 != null) {
+            result += n2
+            s = s.substring(2)
+        } else {
+            if (n1 != null) {
                 result += n1
                 s = s.substring(1)
             }
