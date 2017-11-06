@@ -387,11 +387,14 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     }
     var k = 0
     var j: Int
+    var c1 = 0
+    var c2 = 0
     for (i in 0 until commands.length) {
         if (commands[i] == '[') {
             k++
             listFirst += i
             j = i + 1
+            c1++
             while (k != 0) {
                 if (j == commands.length) throw IllegalArgumentException()
                 if (commands[j] == ']') {
@@ -404,6 +407,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             }
             listSecond += j - 1
         }
+        if (commands[i] == ']') c2++
         if ((commands[i] != '<') && (commands[i] != '>') &&
                 (commands[i] != '+') && (commands[i] != '-') &&
                 (commands[i] != '[') && (commands[i] != ']') &&
@@ -411,7 +415,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             throw IllegalArgumentException()
         }
     }
-    if (listFirst.isEmpty() && "]" in commands) throw IllegalArgumentException()
+    if ((listFirst.isEmpty() && "]" in commands) || c1 != c2) throw IllegalArgumentException()
     var sensor = cells / 2
     var count = 0
     var i = 0
