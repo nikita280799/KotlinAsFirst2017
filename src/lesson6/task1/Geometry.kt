@@ -9,7 +9,7 @@ import lesson3.task1.powInt
 import lesson3.task1.sin
 import lesson4.task1.powInt
 import java.awt.geom.Point2D.distance
-import java.lang.Math.pow
+import java.lang.Math.*
 
 /**
  * Точка на плоскости
@@ -184,21 +184,25 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line {
-    val r = if (s.begin.x <= s.end.x) Point(s.end.x - s.begin.x, s.end.y - s.begin.y)
-    else Point(s.begin.x - s.end.x, s.begin.y - s.end.y)
-    val cos = r.x / r.distance(Point(0.0, 0.0))
-    return Line(s.begin, arccos(cos))
-}
-
-fun arccos(x: Double): Double = Math.PI / 2 - Math.atan(x / Math.sqrt(1 - sqr(x)))
+fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
 
 /**
  * Средняя
  *
  * Построить прямую по двум точкам
  */
-fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
+fun lineByPoints(a: Point, b: Point): Line {
+    if ((a.x == b.x) || (a.y == b.y)) {
+        return if (a.x == b.x) Line(a, PI / 2)
+        else Line(a, 0.0)
+    }
+    val tan = abs((a.y - b.y) / (a.x - b.x))
+    return if (a.x > b.x) {
+        if (a.y > b.y) Line(a, atan(tan)) else Line(a, PI - atan(tan))
+    } else {
+        if (b.y > a.y) Line(a, atan(tan)) else Line(a, PI - atan(tan))
+    }
+}
 
 /**
  * Сложная
@@ -206,12 +210,11 @@ fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
-    val point1 = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
-    if (a.y == b.y) return Line(point1, Math.PI / 2)
-    if (a.x == b.x) return Line(point1, 0.0)
-    val point2 = Point(point1.x - (a.y - b.y) / Math.sqrt(sqr(a.x - b.x) + sqr(a.y - b.y)),
-            point1.y + (a.x - b.x) / Math.sqrt(sqr(a.x - b.x) + sqr(a.y - b.y)))
-    return (lineByPoints(point1, point2))
+    val point = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
+    if (a.y == b.y) return Line(point, Math.PI / 2)
+    if (a.x == b.x) return Line(point, 0.0)
+    val angle = lineByPoints(a, b).angle + PI / 2
+    return if (angle <= PI) Line(point, angle) else Line(point, angle - PI)
 }
 
 /**
@@ -249,7 +252,7 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
     val ab = bisectorByPoints(a, b)
-    val ac = bisectorByPoints(a,c)
+    val ac = bisectorByPoints(a, c)
     val point = ab.crossPoint(ac)
     return Circle(point, point.distance(a))
 }
