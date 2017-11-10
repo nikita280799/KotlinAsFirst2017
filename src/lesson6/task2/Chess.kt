@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson6.task2
 
 import java.lang.Math.abs
@@ -25,7 +26,7 @@ data class Square(val column: Int, val row: Int) {
      */
     fun notation(): String {
         if (!Square(column, row).inside()) return ""
-        val map = mapOf(1 to "a", 2 to "b", 3 to "c", 4 to "d", 5 to "e", 6 to "f",7 to "g",8 to "h")
+        val map = mapOf(1 to "a", 2 to "b", 3 to "c", 4 to "d", 5 to "e", 6 to "f", 7 to "g", 8 to "h")
         val column1 = map[column] ?: ""
         return "$column1$row"
     }
@@ -39,8 +40,9 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    val map = mapOf('a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 'f' to 6,'g' to 7,'h' to 8)
+    val map = mapOf('a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 'f' to 6, 'g' to 7, 'h' to 8)
     val column1 = map[notation[0]] ?: throw IllegalArgumentException()
+    if ((notation[1] !in '1'..'8') || notation.length > 2) throw IllegalArgumentException()
     return Square(column1, notation[1].toString().toInt())
 }
 
@@ -123,7 +125,7 @@ fun rookTrajectory(start: Square, end: Square): List<Square> {
  */
 fun bishopMoveNumber(start: Square, end: Square): Int {
     if (!start.inside() || !end.inside()) throw IllegalArgumentException()
-    if ((start.column + start.row) % 2 != (end.column + end.row) % 2 ) return -1
+    if ((start.column + start.row) % 2 != (end.column + end.row) % 2) return -1
     if (start == end) return 0
     if (Math.abs(start.column - end.column) == Math.abs(start.row - end.row)) return 1
     return 2
@@ -195,7 +197,7 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int = kingTrajectory(start, end).size -1
+fun kingMoveNumber(start: Square, end: Square): Int = kingTrajectory(start, end).size - 1
 
 /**
  * Сложная
@@ -219,15 +221,15 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     list.add(start)
     while (Square(y, x) != end) {
         if ((y == end.column) || (x == end.row)) {
-            if (y == end.column)  {
-                    while(x != end.row) {
-                        if (x > end.row) x-- else x++
-                        list.add(Square(y,x))
-                    }
+            if (y == end.column) {
+                while (x != end.row) {
+                    if (x > end.row) x-- else x++
+                    list.add(Square(y, x))
+                }
             } else {
-                while(y != end.column) {
+                while (y != end.column) {
                     if (y > end.column) y-- else y++
-                    list.add(Square(y,x))
+                    list.add(Square(y, x))
                 }
             }
             break
@@ -235,22 +237,22 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
         if ((y < end.column) && (x < end.row)) {
             y++
             x++
-            list.add(Square(y,x))
+            list.add(Square(y, x))
         }
         if ((y < end.column) && (x > end.row)) {
             y++
             x--
-            list.add(Square(y,x))
+            list.add(Square(y, x))
         }
         if ((y > end.column) && (x < end.row)) {
             y--
             x++
-            list.add(Square(y,x))
+            list.add(Square(y, x))
         }
         if ((y > end.column) && (x > end.row)) {
             y--
             x--
-            list.add(Square(y,x))
+            list.add(Square(y, x))
         }
     }
     return list
