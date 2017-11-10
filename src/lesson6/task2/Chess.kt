@@ -41,9 +41,9 @@ data class Square(val column: Int, val row: Int) {
  */
 fun square(notation: String): Square {
     val map = mapOf('a' to 1, 'b' to 2, 'c' to 3, 'd' to 4, 'e' to 5, 'f' to 6, 'g' to 7, 'h' to 8)
-    val column1 = map[notation[0]] ?: throw IllegalArgumentException()
+    val column = map[notation[0]] ?: throw IllegalArgumentException()
     if ((notation[1] !in '1'..'8') || notation.length != 2) throw IllegalArgumentException()
-    return Square(column1, notation[1].toString().toInt())
+    return Square(column, notation[1].toString().toInt())
 }
 
 /**
@@ -156,22 +156,28 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
     if (r == -1) return list
     list.add(start)
     if (r == 2) {
-        val point1: Square
-        val point2: Square
+        val x: Int
+        val y: Int
+        val z: Int
+        val t: Int
         if (start.column >= end.column) {
-            point1 = start
-            point2 = end
+            x = end.column
+            y = end.row
+            z = start.column
+            t = start.row
         } else {
-            point1 = end
-            point2 = start
+            z = end.column
+            t = end.row
+            x = start.column
+            y = start.row
         }
-        var x = point2.column + (point1.column - point2.column) / 2 + (point1.row - point2.row) / 2
-        var y = point2.row + (point1.column - point2.column) / 2 + (point1.row - point2.row) / 2
-        if ((x !in 1..8) || (y !in 1..8)) {
-            x = point2.column + (point1.column - point2.column) / 2 - (point1.row - point2.row) / 2
-            y = point2.row - (point1.column - point2.column) / 2 + (point1.row - point2.row) / 2
+        var column = x + (z - x) / 2.0 + (t - y) / 2.0
+        var row = y + (z - x) / 2.0 + (t - y) / 2.0
+        if ((column !in 1..8) || (row !in 1..8) || (column % 1.0 != 0.0) || (row % 1.0 != 0.0)) {
+            column =  x + (z - x) / 2.0 - (t - y) / 2.0
+            row = y - (z - x) / 2.0 + (t - y) / 2.0
         }
-        list.add(Square(x, y))
+        list.add(Square(column.toInt(), row.toInt()))
     }
     if (r > 0) list.add(end)
     return list

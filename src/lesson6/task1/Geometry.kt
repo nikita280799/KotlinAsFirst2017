@@ -271,7 +271,6 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle {
     if (points.isEmpty()) throw IllegalArgumentException()
     if (points.size == 1) return Circle(points[0], 0.0)
-    if (points.size == 3) return circleByThreePoints(points[0], points[1], points[2])
     val s = diameter(*points)
     val c = circleByDiameter(s)
     for (i in 0 until points.size) {
