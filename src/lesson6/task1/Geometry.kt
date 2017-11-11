@@ -196,12 +196,10 @@ fun lineByPoints(a: Point, b: Point): Line {
         return if (a.x == b.x) Line(a, PI / 2)
         else Line(a, 0.0)
     }
-    val tan = abs((a.y - b.y) / (a.x - b.x))
-    return if (a.x > b.x) {
-        if (a.y > b.y) Line(a, atan(tan)) else Line(a, PI - atan(tan))
-    } else {
-        if (b.y > a.y) Line(a, atan(tan)) else Line(a, PI - atan(tan))
-    }
+    val tan = (a.y - b.y) / (a.x - b.x)
+    var c = atan(tan)
+    if (c < 0) c += PI
+    return Line(a, c)
 }
 
 /**
@@ -213,8 +211,9 @@ fun bisectorByPoints(a: Point, b: Point): Line {
     val point = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     if (a.y == b.y) return Line(point, Math.PI / 2)
     if (a.x == b.x) return Line(point, 0.0)
-    val angle = lineByPoints(a, b).angle + PI / 2
-    return if (angle <= PI) Line(point, angle) else Line(point, angle - PI)
+    var c = atan(-1 / ((a.y - b.y) / (a.x - b.x)))
+    if (c < 0) c += PI
+    return Line(point, c)
 }
 
 /**
