@@ -310,6 +310,7 @@ fun knightMoveNumber(start: Square, end: Square): Int = knightTrajectory(start, 
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun knightTrajectory(start: Square, end: Square): List<Square> {
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
     val list = mutableListOf<Square>()
     list.add(start)
     var s: Square
