@@ -174,7 +174,7 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
         var column = x + (z - x) / 2.0 + (t - y) / 2.0
         var row = y + (z - x) / 2.0 + (t - y) / 2.0
         if ((column !in 1..8) || (row !in 1..8) || (column % 1.0 != 0.0) || (row % 1.0 != 0.0)) {
-            column =  x + (z - x) / 2.0 - (t - y) / 2.0
+            column = x + (z - x) / 2.0 - (t - y) / 2.0
             row = y - (z - x) / 2.0 + (t - y) / 2.0
         }
         list.add(Square(column.toInt(), row.toInt()))
@@ -287,7 +287,7 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+fun knightMoveNumber(start: Square, end: Square): Int = knightTrajectory(start, end).size - 1
 
 /**
  * Очень сложная
@@ -309,4 +309,117 @@ fun knightMoveNumber(start: Square, end: Square): Int = TODO()
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun knightTrajectory(start: Square, end: Square): List<Square> {
+    val list = mutableListOf<Square>()
+    list.add(start)
+    var s: Square
+    if (start == end) return list
+    s = knight1step(start, end)
+    list.add(s)
+    while (s != end) {
+        s = knight1step(s, end)
+        list.add(s)
+    }
+    return list
+}
+
+fun knight1step(start: Square, end: Square): Square {
+    var dr = end.row - start.row
+    var dc = end.column - start.column
+    val r = start.row
+    val c = start.column
+    val rz: Int
+    val cz: Int
+    val p: Int
+    val f: Int
+    var t: Pair<Int, Int>
+    if (dr > 0) {
+        rz = 1
+    } else {
+        rz = -1
+        dr *= -1
+    }
+    if (dc > 0) {
+        cz = 1
+    } else {
+        cz = -1
+        dc *= -1
+    }
+    if (dr > dc) {
+        p = 1
+    } else {
+        p = -1
+        f = dc
+        dc = dr
+        dr = f
+    }
+    if ((dr == 1) && (dc == 1) && ((start == Square(1, 1))
+            || (start == Square(8, 8))
+            || (start == Square(1, 8)) || (start == Square(8, 1)))) {
+        t = transformation(1, 1, rz, cz, p)
+        return Square(c + t.first, r + t.second)
+    }
+    if ((dr == 1) && (dc == 1) && ((start == Square(2, 2))
+            || (start == Square(7, 7))
+            || (start == Square(2, 7)) || (start == Square(7, 2)))) {
+        t = transformation(-1, -2, rz, cz, p)
+        return Square(c + t.first, r + t.second)
+    }
+    if ((dr == 1) && (dc == 1) && ((start == Square(1, 4))
+            || (start == Square(4, 1))
+            || (start == Square(1, 5)) || (start == Square(5, 1))
+            || (start == Square(8, 4)) || (start == Square(4, 8))
+            || (start == Square(8, 5)) || (start == Square(5, 8)))) {
+        t = transformation(2, -1, rz, cz, p)
+        if (Square(c + t.first, r + t.second).inside())
+            return Square(c + t.first, r + t.second) else {
+            t = transformation(-2, -1, rz, cz, p)
+            return Square(c + t.first, r + t.second)
+        }
+    }
+    if (((dc == 0) && (dr == 1)) || ((dc == 0) && (dr == 2))) {
+        t = transformation(2, 1, rz, cz, p)
+        if (Square(c + t.first, r + t.second).inside())
+            return Square(c + t.first, r + t.second) else {
+            t = transformation(-2, 1, rz, cz, p)
+            return Square(c + t.first, r + t.second)
+        }
+    }
+    if ((dc == 1) && (dr == 1)) {
+        t = transformation(2, -1, rz, cz, p)
+        if (Square(c + t.first, r + t.second).inside())
+            return Square(c + t.first, r + t.second) else {
+            t = transformation(-1, 2, rz, cz, p)
+            return Square(c + t.first, r + t.second)
+        }
+    }
+    if ((dc == 1) && (dr == 3)) {
+        t = transformation(2, 1, rz, cz, p)
+        if (Square(c + t.first, r + t.second).inside())
+            return Square(c + t.first, r + t.second) else {
+            t = transformation(-1, 2, rz, cz, p)
+            return Square(c + t.first, r + t.second)
+        }
+    }
+    if (((dc == 2) && (dr == 3)) || ((dc == 3) && (dr == 4))) {
+        t = transformation(2, 1, rz, cz, p)
+        return Square(c + t.first, r + t.second)
+    }
+    t = transformation(1, 2, rz, cz, p)
+    return Square(c + t.first, r + t.second)
+}
+
+fun transformation(dc: Int, dr: Int, rz: Int, cz: Int, p: Int): Pair<Int, Int> {
+    var r: Int
+    var c: Int
+    if (p == -1) {
+        r = dc
+        c = dr
+    } else {
+        r = dr
+        c = dc
+    }
+    if (rz == -1) r *= -1
+    if (cz == -1) c *= -1
+    return Pair(c, r)
+}
