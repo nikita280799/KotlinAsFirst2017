@@ -357,25 +357,33 @@ fun knight1step(start: Square, end: Square): Square {
     if ((dr == 1) && (dc == 1) && ((start == Square(1, 1))
             || (start == Square(8, 8))
             || (start == Square(1, 8)) || (start == Square(8, 1)))) {
-        t = transformation(1, 1, rz, cz, p)
+        t = transformation(1, 2, rz, cz, p)
         return Square(c + t.first, r + t.second)
     }
-    if ((dr == 1) && (dc == 1) && ((start == Square(2, 2))
-            || (start == Square(7, 7))
-            || (start == Square(2, 7)) || (start == Square(7, 2)))) {
-        t = transformation(-1, -2, rz, cz, p)
-        return Square(c + t.first, r + t.second)
-    }
-    if ((dr == 1) && (dc == 1) && ((start == Square(1, 4))
-            || (start == Square(4, 1))
-            || (start == Square(1, 5)) || (start == Square(5, 1))
-            || (start == Square(8, 4)) || (start == Square(4, 8))
-            || (start == Square(8, 5)) || (start == Square(5, 8)))) {
-        t = transformation(2, -1, rz, cz, p)
-        if (Square(c + t.first, r + t.second).inside())
-            return Square(c + t.first, r + t.second) else {
-            t = transformation(-2, -1, rz, cz, p)
+    if ((dr == 1) && (dc == 1)) {
+        if (((start == Square(2, 2)) && (end == Square(1, 1)))
+                || ((start == Square(7, 7)) && (end == Square(8, 8)))
+                || ((start == Square(2, 7)) && (end == Square(1, 8)))
+                || ((start == Square(7, 2)) && (end == Square(8, 1)))) {
+            t = transformation(-1, -2, rz, cz, p)
             return Square(c + t.first, r + t.second)
+        }
+    }
+    if ((dr == 3) && (dc == 0)) {
+        if ((((start == Square(1, 4)) && (end == Square(1, 1)))
+                || ((start == Square(4, 1)) && (end == Square(1, 1)))
+                || ((start == Square(1, 5)) && (end == Square(1, 8)))
+                || ((start == Square(5, 1)) && (end == Square(8, 1)))
+                || ((start == Square(8, 4)) && (end == Square(8, 1)))
+                || ((start == Square(4, 8)) && (end == Square(1, 8)))
+                || ((start == Square(8, 5)) && (end == Square(8, 8)))
+                || ((start == Square(5, 8)) && (end == Square(8, 8))))) {
+            t = transformation(2, -1, rz, cz, p)
+            if (Square(c + t.first, r + t.second).inside())
+                return Square(c + t.first, r + t.second) else {
+                t = transformation(-2, -1, rz, cz, p)
+                return Square(c + t.first, r + t.second)
+            }
         }
     }
     if (((dc == 0) && (dr == 1)) || ((dc == 0) && (dr == 2))) {
