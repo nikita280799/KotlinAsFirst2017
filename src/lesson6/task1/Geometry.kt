@@ -164,7 +164,7 @@ class Line private constructor(val b: Double, val angle: Double) {
         val k2 = Math.sin(other.angle) / Math.cos(other.angle)
         val b2 = other.b / Math.cos(other.angle)
         val x = (b1 - b2) / (k2 - k1)
-        val y = k2 * x + b2
+        val y = if (angle < other.angle) k1 * x + b1 else k2 * x + b2
         return Point(x, y)
     }
 
@@ -209,10 +209,8 @@ fun lineByPoints(a: Point, b: Point): Line {
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
     val point = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
-    if (a.y == b.y) return Line(point, Math.PI / 2)
-    if (a.x == b.x) return Line(point, 0.0)
     var ang = lineByPoints(a, b).angle
-    ang += if (ang in 0.0..PI /2) PI / 2 else - PI / 2
+    ang += if (ang in PI / 2..PI) -PI / 2 else PI / 2
     return Line(point, ang)
 }
 
@@ -250,9 +248,37 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    val ab = bisectorByPoints(a, b)
-    val ac = bisectorByPoints(a, c)
-    val point = ab.crossPoint(ac)
+    val point1 = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
+    val point2 = Point((a.x + c.x) / 2, (a.y + c.y) / 2)
+    val x: Double
+    val y: Double
+    val k1 = (a.y - b.y) / (a.x - b.x)
+    val k2 = (a.y - c.y) / (a.x - c.x)
+    val kb1 = -1 / k1
+    val kb2 = -1 / k2
+    if ((a.x == b.x) || (a.y == b.y) || (a.x == c.x) || (a.y == c.y)) {
+        if ((a.x == b.x) || (a.x == c.x)) {
+            if (a.x == b.x) {
+                y = point1.y
+                x = if (a.y != c.y) (y - point2.y + kb2 * point2.x) / kb2 else point2.x
+            } else {
+                y = point2.y
+                x = if (a.y != b.y) (y - point1.y + kb1 * point1.x) / kb1 else point1.x
+            }
+        } else {
+            if (a.y == b.y) {
+                x = point1.x
+                y = if (a.x != b.x) kb2 * (x - point2.x) + point2.y else point2.y
+            } else {
+                x = point2.x
+                y = if (a.x != c.x) kb1 * (x - point1.x) + point1.y else point1.y
+            }
+        }
+    } else {
+        x = (point2.y - point1.y + kb1 * point1.x - kb2 * point2.x) / (kb1 - kb2)
+        y = kb1 * (x - point1.x) + point1.y
+    }
+    val point = Point(x, y)
     return Circle(point, point.distance(a))
 }
 

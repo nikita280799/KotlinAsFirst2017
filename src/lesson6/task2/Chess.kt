@@ -2,8 +2,6 @@
 
 package lesson6.task2
 
-import java.lang.Math.abs
-
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -171,13 +169,13 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
             x = start.column
             y = start.row
         }
-        var column = x + (z - x) / 2.0 + (t - y) / 2.0
-        var row = y + (z - x) / 2.0 + (t - y) / 2.0
-        if ((column !in 1..8) || (row !in 1..8) || (column % 1.0 != 0.0) || (row % 1.0 != 0.0)) {
-            column = x + (z - x) / 2.0 - (t - y) / 2.0
-            row = y - (z - x) / 2.0 + (t - y) / 2.0
+        var column = x + ((z - x) + (t - y)) / 2
+        var row = y + ((z - x) + (t - y)) / 2
+        if ((column !in 1..8) || (row !in 1..8) || (((z - x) + (t - y)) % 2 != 0)) {
+            column = x + ((z - x) - (t - y)) / 2
+            row = y + (-(z - x) + (t - y)) / 2
         }
-        list.add(Square(column.toInt(), row.toInt()))
+        list.add(Square(column, row))
     }
     if (r > 0) list.add(end)
     return list
@@ -226,17 +224,17 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     val list = mutableListOf<Square>()
     list.add(start)
     while (Square(y, x) != end) {
-        if ((y == end.column) || (x == end.row)) {
-            if (y == end.column) {
-                while (x != end.row) {
-                    if (x > end.row) x-- else x++
-                    list.add(Square(y, x))
-                }
-            } else {
-                while (y != end.column) {
-                    if (y > end.column) y-- else y++
-                    list.add(Square(y, x))
-                }
+        if (y == end.column) {
+            while (x != end.row) {
+                if (x > end.row) x-- else x++
+                list.add(Square(y, x))
+            }
+            break
+        }
+        if (x == end.row) {
+            while (y != end.column) {
+                if (y > end.column) y-- else y++
+                list.add(Square(y, x))
             }
             break
         }
@@ -324,32 +322,40 @@ fun knightTrajectory(start: Square, end: Square): List<Square> {
     return list
 }
 
+/*
+ В этой функции я выбираю наиболее оптимальный ход для коня для заданных стартовых и конечных позиций. Делаю я это, сводя
+ все возможные случаи к одной ситуации, для которой уже выбираю оптимальный ход. Я для себя так определил эту ситуацию:
+ разница координат конца и начала положительна, при этом разница строк больше или совпадает с разницей колонок.
+ Поэтому в начале программы если исходные данные не соответствуют необходимой мне ситуации, я меняю знаки "приращения" колонок
+ и строк и, при необходимости, меняю их местами, при этом записываю изменения в переменных. Далее идет выбор оптимального хода,
+ и когда он сделан необходимо обратить все изменения, которые были сделаны мной до этого, для чего и необходима функция transform
+ */
 fun knight1step(start: Square, end: Square): Square {
     var dr = end.row - start.row
     var dc = end.column - start.column
-    val r = start.row
-    val c = start.column
-    val rz: Int
-    val cz: Int
-    val p: Int
+    val row = start.row
+    val column = start.column
+    val signOfRow: Int
+    val signOfColumn: Int
+    val change: Int
     val f: Int
-    var t: Pair<Int, Int>
+    var transformedPair: Pair<Int, Int>
     if (dr > 0) {
-        rz = 1
+        signOfRow = 1
     } else {
-        rz = -1
+        signOfRow = -1
         dr *= -1
     }
     if (dc > 0) {
-        cz = 1
+        signOfColumn = 1
     } else {
-        cz = -1
+        signOfColumn = -1
         dc *= -1
     }
     if (dr > dc) {
-        p = 1
+        change = 1
     } else {
-        p = -1
+        change = -1
         f = dc
         dc = dr
         dr = f
@@ -357,16 +363,16 @@ fun knight1step(start: Square, end: Square): Square {
     if ((dr == 1) && (dc == 1) && ((start == Square(1, 1))
             || (start == Square(8, 8))
             || (start == Square(1, 8)) || (start == Square(8, 1)))) {
-        t = transformation(1, 2, rz, cz, p)
-        return Square(c + t.first, r + t.second)
+        transformedPair = transform(1, 2, signOfRow, signOfColumn, change)
+        return Square(column + transformedPair.first, row + transformedPair.second)
     }
     if ((dr == 1) && (dc == 1)) {
         if (((start == Square(2, 2)) && (end == Square(1, 1)))
                 || ((start == Square(7, 7)) && (end == Square(8, 8)))
                 || ((start == Square(2, 7)) && (end == Square(1, 8)))
                 || ((start == Square(7, 2)) && (end == Square(8, 1)))) {
-            t = transformation(-1, -2, rz, cz, p)
-            return Square(c + t.first, r + t.second)
+            transformedPair = transform(-1, -2, signOfRow, signOfColumn, change)
+            return Square(column + transformedPair.first, row + transformedPair.second)
         }
     }
     if ((dr == 3) && (dc == 0)) {
@@ -378,57 +384,61 @@ fun knight1step(start: Square, end: Square): Square {
                 || ((start == Square(4, 8)) && (end == Square(1, 8)))
                 || ((start == Square(8, 5)) && (end == Square(8, 8)))
                 || ((start == Square(5, 8)) && (end == Square(8, 8))))) {
-            t = transformation(2, -1, rz, cz, p)
-            if (Square(c + t.first, r + t.second).inside())
-                return Square(c + t.first, r + t.second) else {
-                t = transformation(-2, -1, rz, cz, p)
-                return Square(c + t.first, r + t.second)
+            transformedPair = transform(2, -1, signOfRow, signOfColumn, change)
+            if (Square(column + transformedPair.first, row + transformedPair.second).inside()) {
+                return Square(column + transformedPair.first, row + transformedPair.second)
+            } else {
+                transformedPair = transform(-2, -1, signOfRow, signOfColumn, change)
+                return Square(column + transformedPair.first, row + transformedPair.second)
             }
         }
     }
     if (((dc == 0) && (dr == 1)) || ((dc == 0) && (dr == 2))) {
-        t = transformation(2, 1, rz, cz, p)
-        if (Square(c + t.first, r + t.second).inside())
-            return Square(c + t.first, r + t.second) else {
-            t = transformation(-2, 1, rz, cz, p)
-            return Square(c + t.first, r + t.second)
+        transformedPair = transform(2, 1, signOfRow, signOfColumn, change)
+        if (Square(column + transformedPair.first, row + transformedPair.second).inside()) {
+            return Square(column + transformedPair.first, row + transformedPair.second)
+        } else {
+            transformedPair = transform(-2, 1, signOfRow, signOfColumn, change)
+            return Square(column + transformedPair.first, row + transformedPair.second)
         }
     }
     if ((dc == 1) && (dr == 1)) {
-        t = transformation(2, -1, rz, cz, p)
-        if (Square(c + t.first, r + t.second).inside())
-            return Square(c + t.first, r + t.second) else {
-            t = transformation(-1, 2, rz, cz, p)
-            return Square(c + t.first, r + t.second)
+        transformedPair = transform(2, -1, signOfRow, signOfColumn, change)
+        if (Square(column + transformedPair.first, row + transformedPair.second).inside()) {
+            return Square(column + transformedPair.first, row + transformedPair.second)
+        } else {
+            transformedPair = transform(-1, 2, signOfRow, signOfColumn, change)
+            return Square(column + transformedPair.first, row + transformedPair.second)
         }
     }
     if ((dc == 1) && (dr == 3)) {
-        t = transformation(2, 1, rz, cz, p)
-        if (Square(c + t.first, r + t.second).inside())
-            return Square(c + t.first, r + t.second) else {
-            t = transformation(-1, 2, rz, cz, p)
-            return Square(c + t.first, r + t.second)
+        transformedPair = transform(2, 1, signOfRow, signOfColumn, change)
+        if (Square(column + transformedPair.first, row + transformedPair.second).inside()) {
+            return Square(column + transformedPair.first, row + transformedPair.second)
+        } else {
+            transformedPair = transform(-1, 2, signOfRow, signOfColumn, change)
+            return Square(column + transformedPair.first, row + transformedPair.second)
         }
     }
     if (((dc == 2) && (dr == 3)) || ((dc == 3) && (dr == 4))) {
-        t = transformation(2, 1, rz, cz, p)
-        return Square(c + t.first, r + t.second)
+        transformedPair = transform(2, 1, signOfRow, signOfColumn, change)
+        return Square(column + transformedPair.first, row + transformedPair.second)
     }
-    t = transformation(1, 2, rz, cz, p)
-    return Square(c + t.first, r + t.second)
+    transformedPair = transform(1, 2, signOfRow, signOfColumn, change)
+    return Square(column + transformedPair.first, row + transformedPair.second)
 }
 
-fun transformation(dc: Int, dr: Int, rz: Int, cz: Int, p: Int): Pair<Int, Int> {
+fun transform(dc: Int, dr: Int, singOfRow: Int, signOfColumn: Int, change: Int): Pair<Int, Int> {
     var r: Int
     var c: Int
-    if (p == -1) {
+    if (change == -1) {
         r = dc
         c = dr
     } else {
         r = dr
         c = dc
     }
-    if (rz == -1) r *= -1
-    if (cz == -1) c *= -1
+    if (singOfRow == -1) r *= -1
+    if (signOfColumn == -1) c *= -1
     return Pair(c, r)
 }
