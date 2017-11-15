@@ -135,9 +135,9 @@ fun diameter(vararg points: Point): Segment {
  * Построить окружность по её диаметру, заданному двумя точками
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
-fun circleByDiameter(diameter: Segment): Circle = Circle(Point((diameter.begin.x + diameter.end.x) / 2,
-        (diameter.begin.y + diameter.end.y) / 2),
-        diameter.begin.distance(diameter.end) / 2)
+fun circleByDiameter(diameter: Segment): Circle = Circle(Point((diameter.begin.x + diameter.end.x) / 2.0,
+        (diameter.begin.y + diameter.end.y) / 2.0),
+        diameter.begin.distance(diameter.end) / 2.0)
 
 /**
  * Прямая, заданная точкой point и углом наклона angle (в радианах) по отношению к оси X.
@@ -300,10 +300,8 @@ fun minContainingCircle(vararg points: Point): Circle {
     val c = circleByDiameter(s)
     var m = Point(0.0, 0.0)
     var max = 0.0
-    val list = mutableListOf<Point>()
     for (i in 0 until points.size) {
-        if (!c.contains(points[i])) {
-            list.add(points[i])
+        if ((!c.contains(points[i])) && (points[i] != s.begin) && (points[i] != s.end)) {
             if (points[i].distance(c.center) > max) {
                 max = points[i].distance(c.center)
                 m = points[i]
