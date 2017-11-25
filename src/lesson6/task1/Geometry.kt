@@ -150,7 +150,15 @@ class Line private constructor(val b: Double, val angle: Double) {
         assert(angle >= 0 && angle < Math.PI) { "Incorrect line angle: $angle" }
     }
 
-    constructor(point: Point, angle: Double) : this(point.y * Math.cos(angle) - point.x * Math.sin(angle), angle)
+    constructor(point: Point, angle: Double) : this(point.y * Math.cos(if (angle < 0.0) angle + PI else {
+        if (angle >= PI) angle - PI else angle
+    })
+            - point.x * Math.sin(if (angle < 0.0) angle + PI else {
+        if (angle >= PI) angle - PI else angle
+    }),
+            if (angle < 0.0) angle + PI else {
+                if (angle >= PI) angle - PI else angle
+            })
 
     /**
      * Средняя
@@ -164,7 +172,7 @@ class Line private constructor(val b: Double, val angle: Double) {
         val k2 = Math.sin(other.angle) / Math.cos(other.angle)
         val b2 = other.b / Math.cos(other.angle)
         val x = (b1 - b2) / (k2 - k1)
-        val y = if (angle < other.angle) k1 * x + b1 else k2 * x + b2
+        val y = if (abs(PI / 2 - angle) > abs(PI / 2 - other.angle)) k1 * x + b1 else k2 * x + b2
         return Point(x, y)
     }
 
@@ -192,9 +200,7 @@ fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
  * Построить прямую по двум точкам
  */
 fun lineByPoints(a: Point, b: Point): Line {
-    var atan = atan2((a.y - b.y), (a.x - b.x))
-    if (atan == PI) atan -= PI
-    if (atan < 0) atan += PI
+    val atan = atan2((a.y - b.y), (a.x - b.x))
     return Line(a, atan)
 }
 
@@ -206,7 +212,7 @@ fun lineByPoints(a: Point, b: Point): Line {
 fun bisectorByPoints(a: Point, b: Point): Line {
     val point = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     var ang = lineByPoints(a, b).angle
-    ang += if (ang in PI / 2..PI) -PI / 2 else PI / 2
+    ang += PI / 2
     return Line(point, ang)
 }
 
@@ -243,7 +249,13 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  * (построить окружность по трём точкам, или
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
-fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
+fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
+    val ab = bisectorByPoints(a, b)
+    val ac = bisectorByPoints(a, c)
+    val point = ab.crossPoint(ac)
+    return Circle(point, point.distance(a))
+}
+
 
 /**
  * Очень сложная
@@ -257,4 +269,3 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
  * соединяющий две самые удалённые точки в данном множестве.
  */
 fun minContainingCircle(vararg points: Point): Circle = TODO()
-
