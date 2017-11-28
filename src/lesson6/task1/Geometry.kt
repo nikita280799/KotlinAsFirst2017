@@ -150,15 +150,8 @@ class Line private constructor(val b: Double, val angle: Double) {
         assert(angle >= 0 && angle < Math.PI) { "Incorrect line angle: $angle" }
     }
 
-    constructor(point: Point, angle: Double) : this(point.y * Math.cos(if (angle < 0.0) angle + PI else {
-        if (angle >= PI) angle - PI else angle
-    })
-            - point.x * Math.sin(if (angle < 0.0) angle + PI else {
-        if (angle >= PI) angle - PI else angle
-    }),
-            if (angle < 0.0) angle + PI else {
-                if (angle >= PI) angle - PI else angle
-            })
+    constructor(point: Point, angle: Double) : this(point.y * Math.cos(correctAngle(angle)) -
+            point.x * Math.sin(correctAngle(angle)), correctAngle(angle))
 
     /**
      * Средняя
@@ -185,6 +178,10 @@ class Line private constructor(val b: Double, val angle: Double) {
     }
 
     override fun toString() = "Line(${Math.cos(angle)} * y = ${Math.sin(angle)} * x + $b)"
+}
+
+fun correctAngle(angle: Double) = if (angle < 0.0) angle + PI else {
+    if (angle >= PI) angle - PI else angle
 }
 
 /**
